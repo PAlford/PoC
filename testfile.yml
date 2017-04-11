@@ -1,0 +1,39 @@
+# Note: examples below use the following provider dict to handle
+#       transport and authentication to the node.
+---
+vars:
+  cli:
+    host: "{{ inventory_hostname }}"
+    username: admin
+    password: admin
+    transport: cli
+
+---
+- name: configure top level configuration and save it
+  nxos_config:
+    lines: hostname {{ inventory_hostname }}
+    save: yes
+    provider: "{{ cli }}"
+
+- nxos_config:
+    lines:
+      - 10 permit ip 1.1.1.1/32 any log
+      - 20 permit ip 2.2.2.2/32 any log
+      - 30 permit ip 3.3.3.3/32 any log
+      - 40 permit ip 4.4.4.4/32 any log
+      - 50 permit ip 5.5.5.5/32 any log
+    parents: ip access-list test
+    before: no ip access-list test
+    match: exact
+    provider: "{{ cli }}"
+
+- nxos_config:
+    lines:
+      - 10 permit ip 1.1.1.1/32 any log
+      - 20 permit ip 2.2.2.2/32 any log
+      - 30 permit ip 3.3.3.3/32 any log
+      - 40 permit ip 4.4.4.4/32 any log
+    parents: ip access-list test
+    before: no ip access-list test
+    replace: block
+    provider: "{{ cli }}"
